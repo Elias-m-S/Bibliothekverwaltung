@@ -1,0 +1,51 @@
+modules = ["c"]
+
+[nix]
+channel = "stable-24_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Library Management System"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "library-test"
+
+[[workflows.workflow]]
+name = "Library Management System"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "gcc -o library_app bibliothek.c library_app.c -lm && ./library_app"
+
+[[workflows.workflow]]
+name = "library-test"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "gcc -o library_test bibliothek.c test.c -lm && ./library_test"
+
+[deployment]
+run = ["sh", "-c", "gcc -o library_app bibliothek.c library_app.c -lm && ./library_app"]
