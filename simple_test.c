@@ -1,14 +1,60 @@
-/**
- * bibliothek.c
- * Implementiert die Funktionen für die Bibliotheksverwaltung
- */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <time.h>
 
-#include "bibliothek.h"
+/* Konstanten */
+#define LEN_ISBN 14          // Maximale Länge einer ISBN
+#define MAXRESULTS 10        // Maximale Anzahl von Suchergebnissen
+#define MAX_TITEL_LAENGE 256 // Maximale Länge eines Buchtitels
+#define MAX_AUSLEIHEN 100    // Maximale Anzahl von ausgeliehenen Büchern
+#define AUSLEIHDAUER 28      // Ausleihdauer in Tagen
+#define CSV_DATEI "attached_assets/books.csv" // Pfad zur CSV-Datei
+#define AUSLEIHDATEI "ausleihen.txt"          // Datei zum Speichern der Ausleihvorgänge
+
+/* Datenstrukturen */
+
+// Struktur für ein Buch
+typedef struct Buch {
+    char isbn[LEN_ISBN];        // ISBN des Buches
+    char titel[MAX_TITEL_LAENGE]; // Titel des Buches
+    struct Buch* links;         // Zeiger auf linken Teilbaum (kleinere ISBN)
+    struct Buch* rechts;        // Zeiger auf rechten Teilbaum (größere ISBN)
+} Buch;
+
+// Struktur für ein ausgeliehenes Buch
+typedef struct Ausleihe {
+    char isbn[LEN_ISBN];          // ISBN des ausgeliehenen Buches
+    char titel[MAX_TITEL_LAENGE]; // Titel des ausgeliehenen Buches
+    time_t ausleihDatum;         // Datum der Ausleihe
+} Ausleihe;
 
 /* Globale Variablen */
 Buch* wurzel = NULL;                // Wurzel des Binärbaums
 Ausleihe ausleihen[MAX_AUSLEIHEN];  // Array der ausgeliehenen Bücher
 int anzahlAusleihen = 0;            // Anzahl der aktuellen Ausleihen
+
+/* Funktionsprototypen */
+void init();
+void nachTitelSuchen(char* titel, char isbnListe[][LEN_ISBN], int maxResults);
+void nachIsbnSuchen(char* isbn, char isbnListe[][LEN_ISBN], int maxResults);
+int buchAusleihen(char* isbn);
+int kontoAnzeigen();
+int buchZurueckgeben(char* isbn);
+
+/* Hilfsfunktionen Prototypen */
+Buch* neuesBuchErstellen(const char* isbn, const char* titel);
+Buch* buchEinfuegen(Buch* wurzelKnoten, const char* isbn, const char* titel);
+Buch* buchNachIsbnSuchen(Buch* wurzelKnoten, const char* isbn);
+void zuKleinbuchstaben(char* str);
+int enthältTeilstring(const char* quelle, const char* teilstring);
+int büchernachTitelSuchenRekursiv(Buch* wurzelKnoten, const char* titel, char isbnListe[][LEN_ISBN], int maxResults, int aktuelleAnzahl);
+void csvDateiEinlesen();
+void ausleihenLaden();
+void ausleihenSpeichern();
+void eingabePufferLeeren();
+int menüAnzeigen();
 
 /* Hilfsfunktionen für Binärbaum-Operationen */
 
@@ -283,7 +329,7 @@ void ausleihenLaden() {
     anzahlAusleihen = 0;
     
     while (anzahlAusleihen < MAX_AUSLEIHEN && 
-           fscanf(datei, "%13s\n", ausleihen[anzahlAusleihen].isbn) == 1) {
+            fscanf(datei, "%13s\n", ausleihen[anzahlAusleihen].isbn) == 1) {
         
         // Titel aus dem Binärbaum abrufen
         Buch* buch = buchNachIsbnSuchen(wurzel, ausleihen[anzahlAusleihen].isbn);
@@ -321,6 +367,30 @@ void ausleihenSpeichern() {
     }
     
     fclose(datei);
+}
+
+void eingabePufferLeeren() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+int menüAnzeigen() {
+    int auswahl = 0;
+    
+    printf("\n========== Bibliotheksverwaltung ==========\n");
+    printf("1. Nach Büchern suchen (Titel)\n");
+    printf("2. Nach Büchern suchen (ISBN)\n");
+    printf("3. Buch ausleihen\n");
+    printf("4. Buch zurückgeben\n");
+    printf("5. Ausleihkonto anzeigen\n");
+    printf("6. Programm beenden\n");
+    printf("==========================================\n");
+    printf("Bitte wählen Sie eine Option (1-6): ");
+    
+    scanf("%d", &auswahl);
+    eingabePufferLeeren();
+    
+    return auswahl;
 }
 
 /* Implementierung der öffentlichen Funktionen */
@@ -513,4 +583,23 @@ int buchZurueckgeben(char* isbn) {
     
     printf("Buch '%s' erfolgreich zurückgegeben.\n", titelKopie);
     return 1;
+}
+
+/**
+ * Das von Ihnen angegebene Skript als Hauptfunktion
+ */
+int main() {
+    // Ihr Testskript hier:
+    init();
+    
+    char results[MAXRESULTS][LEN_ISBN];
+    kontoAnzeigen();
+    nachTitelSuchen("Science", results, MAXRESULTS);
+    buchAusleihen(results[0]);
+    buchAusleihen(results[1]);
+    kontoAnzeigen();
+    buchZurueckgeben(results[0]);
+    kontoAnzeigen();
+
+    return 0;
 }
