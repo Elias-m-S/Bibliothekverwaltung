@@ -29,7 +29,7 @@ Das Programm bietet folgende Funktionen:
 
 - `bibliothek.h`: Header-Datei mit Deklarationen der Funktionen und Datenstrukturen
 - `bibliothek.c`: Implementierung der Funktionen für die Bibliotheksverwaltung
-- `library_app.c`: Hauptprogramm mit Benutzerinteraktion
+- `main.c`: Hauptprogramm mit Benutzerinteraktion
 - `test.c`: Testprogramm, das die grundlegenden Funktionen testet
 - `books.csv`: CSV-Datei mit den Bücherdaten (ISBN, Titel)
 - `ausleihen.txt`: Datei zum Speichern der Ausleihvorgänge
@@ -39,7 +39,7 @@ Das Programm bietet folgende Funktionen:
 ### Hauptprogramm
 
 ```
-gcc -o library_app bibliothek.c library_app.c -lm && ./library_app
+gcc -o library_app bibliothek.c main.c -lm && ./library_app
 ```
 
 ### Testprogramm

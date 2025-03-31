@@ -31,7 +31,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "gcc -o library_app bibliothek.c library_app.c -lm && ./library_app"
+args = "gcc -o library_app main.c -lm && ./library_app"
 
 [[workflows.workflow]]
 name = "library-test"
@@ -45,7 +45,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "gcc -o library_test bibliothek.c test.c -lm && ./library_test"
+args = "gcc -o library_test test_standalone.c -lm && ./library_test"
 
 [deployment]
-run = ["sh", "-c", "gcc -o library_app bibliothek.c library_app.c -lm && ./library_app"]
+run = ["sh", "-c", "gcc -o library_app main.c -lm && ./library_app"]

@@ -3,7 +3,17 @@
  * Test-Programm für die Bibliotheksverwaltung
  */
 
-#include "bibliothek.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Funktionsprototypen aus main.c
+void init();
+void nachTitelSuchen(char* titel, char isbnListe[][14], int maxResults);
+void nachIsbnSuchen(char* isbn, char isbnListe[][14], int maxResults);
+int buchAusleihen(char* isbn);
+int kontoAnzeigen();
+int buchZurueckgeben(char* isbn);
 
 #define LEN_ISBN 14
 #define MAXRESULTS 10
